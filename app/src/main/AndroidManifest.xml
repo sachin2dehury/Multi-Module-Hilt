@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.test.myapplication">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name="com.test.myapplication.MyApp"
         android:allowBackup="true"

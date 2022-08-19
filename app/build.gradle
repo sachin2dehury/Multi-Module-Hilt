@@ -3,6 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'com.google.firebase.firebase-perf'
+    id 'com.google.gms.google-services'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 android {
@@ -23,6 +26,14 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            FirebasePerformance {
+                // Set this flag to 'false' to disable @AddTrace annotation processing and
+                // automatic HTTP/S network request monitoring
+                // for a specific build variant at compile time.
+                instrumentationEnabled true
+            }
         }
     }
     compileOptions {
@@ -49,10 +60,22 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.43'
     kapt 'com.google.dagger:hilt-compiler:2.43'
 
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:30.3.1')
+
+    // Declare the dependency for the Performance Monitoring library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-perf-ktx'
+
     implementation(project(":mylibrary"))
     implementation(project(":mylibrary2"))
     implementation(project(":mylibrary3"))
     implementation(project(":mylibrary4"))
+
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0'
 }
 
 kapt {

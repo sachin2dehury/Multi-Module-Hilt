@@ -6,6 +6,15 @@ buildscript {
     }
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:${MyDependency.HiltVersion}"
+
+        // To benefit from the latest Performance Monitoring plugin features,
+        // update your Android Gradle Plugin dependency to at least v3.4.0
+        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.google.gms:google-services:4.3.13'  // Google Services plugin
+        // Add the dependency for the Performance Monitoring plugin
+        classpath 'com.google.firebase:perf-plugin:1.4.1'  // Performance Monitoring plugin
+
+        classpath "org.jetbrains.kotlin:kotlin-serialization:1.7.10"
     }
 }
 
@@ -13,6 +22,7 @@ plugins {
     id 'com.android.application' version '7.2.1' apply false
     id 'com.android.library' version '7.2.1' apply false
     id 'org.jetbrains.kotlin.android' version '1.7.10' apply false
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10' apply false
 }
 
 task clean(type: Delete) {
