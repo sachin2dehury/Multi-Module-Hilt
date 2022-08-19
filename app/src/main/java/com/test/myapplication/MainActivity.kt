@@ -45,17 +45,11 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated {
             for (i in 0..20) {
                 val trace =
-                    FirebasePerformance.startTrace("Render ${System.currentTimeMillis()} time $i")
-                val data = instance.getNetworkResponse().body()
+                    FirebasePerformance.startTrace("Moshi time $i")
+                val data = instance.getMoshiResponse().body()
+                trace.stop()
                 Log.w("Sachin", "Response : $data")
                 textView.text = "$data"
-                trace.stop()
-
-                val newData = Json.decodeFromString(
-                    NetworkResponse.serializer(),
-                    Json.encodeToString(NetworkResponse.serializer(), data!!)
-                )
-                Log.w("Sachin", "New data = ${newData.updatedAt}")
             }
         }
         Log.w("Sachin", "${myLib1.get()}, ${myLib4.get()}, ${myLib4.getLib1()}")
