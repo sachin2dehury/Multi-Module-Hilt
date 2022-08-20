@@ -45,10 +45,12 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenCreated {
             for (i in 0..20) {
                 val trace =
-                    FirebasePerformance.startTrace("Moshi time $i")
+                    FirebasePerformance.startTrace("Moshi Kapt time $i")
                 val data = instance.getMoshiResponse().body()
                 trace.stop()
+                val newData = instance.getJokeCategories()
                 Log.w("Sachin", "Response : $data")
+                Log.w("Sachin", "Response Categories : ${newData.body()}")
                 textView.text = "$data"
             }
         }
