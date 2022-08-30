@@ -1,8 +1,6 @@
 package com.test.myapplication
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.Debug
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -10,22 +8,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.metrics.performance.JankStats
 import androidx.metrics.performance.PerformanceMetricsState
-import com.test.mylibrary1.MyLib1
-import com.test.mylibrary4.MainActivity4
-import com.test.mylibrary4.MyLib4
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.perf.ktx.performance
+import com.google.firebase.remoteconfig.ktx.remoteConfig
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var myLib1: MyLib1
-
-    @Inject
-    lateinit var myLib4: MyLib4
 
     private var jankStat: JankStats? = null
 
@@ -33,47 +23,33 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
+
         textView = findViewById<TextView>(R.id.text_view)
 
-        lifecycleScope.launchWhenStarted {
-            while (true) {
-                delay(500)
-                val data = logMemory("Loop")
-                val total = data.values.sumOf { it.toInt() }.toFloat() / 1024
-                textView?.text = "${data.entries.map { "$it \n" }} \n $total"
+        setUpTask()
+        setUpClickListener()
+    }
 
-//                Log.w("Sachin", "Memory Used $total")
+    private fun setUpTask() {
+        lifecycleScope.launch {
+            textView?.text = "Started"
+            for (i in 0..20) {
+                textView?.text = "Run $i"
+                changeBg()
+                Networking.service.getPokemonList()
+                Networking.service.getJokeCategories()
+                Networking.service.getPokemon()
+                Networking.service.getMoshiResponse()
             }
+            textView?.text = "Completed"
         }
-//        lifecycleScope.launch {
-//            Log.w("Sachin","Task Started")
-//            for (i in 0..20) {
-//                changeBg()
-//                val data = instance.getMoshiResponse()
-//                val newData = instance.getJokeCategories()
-//            }
-//        }.invokeOnCompletion {
-//            Log.w("Sachin","Task Ended")
-//        }
+    }
+
+    private fun setUpClickListener() {
         textView?.setOnClickListener {
-            startActivity(Intent(this@MainActivity, MainActivity4::class.java))
-        }
-    }
-
-    private fun calculateFib(value: Int): Int {
-        return if (value <= 1) value
-        else calculateFib(value - 1) + calculateFib(value - 2)
-    }
-
-    private fun logMemory(tag: String) = Debug.MemoryInfo().run {
-        Debug.getMemoryInfo(this)
-//        Log.w("Sachin Memory", "Debug $tag $memoryStats")
-
-        memoryStats.toMutableMap().apply {
-            remove("summary.total-pss")
-            remove("summary.total-swap")
+            Log.w("Sachin Firebase", "Entries : ${Firebase.remoteConfig.all}")
+//            startActivity(Intent(this@MainActivity, MainActivity4::class.java))
         }
     }
 

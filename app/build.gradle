@@ -12,7 +12,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.test.myapplication"
+        applicationId "com.test.myapplication2"
         minSdk 24
         targetSdk 32
         versionCode 1
@@ -66,6 +66,10 @@ dependencies {
     // Declare the dependency for the Performance Monitoring library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-perf-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx'
+
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
 
     implementation(project(":mylibrary"))
     implementation(project(":mylibrary2"))
