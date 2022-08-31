@@ -3,6 +3,7 @@ package com.test.myapplication
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Service {
@@ -24,4 +25,15 @@ interface Service {
 
     @GET("https://pokeapi.co/api/v2/pokemon/ditto")
     suspend fun getPokemon(): ResponseBody
+
+    @GET("https://pokeapi.co/api/v2/pokemon/{path}")
+    suspend fun getPokemonByIndex(
+        @Path("path") index: Int
+    ): ResponseBody
+
+    @GET("https://pokeapi.co/api/v2/ability/battle-armor")
+    suspend fun getPokemonAbility(): ResponseBody
+
+    @GET("https://pokeapi.co/api/v2/pokemon-species/aegislash")
+    suspend fun getPokemonSpecies(): ResponseBody
 }
