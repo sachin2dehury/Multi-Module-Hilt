@@ -1,4 +1,4 @@
 object MyDependency {
 
-    const val HiltVersion = "2.43"
+    const val HiltVersion = "2.44"
 }

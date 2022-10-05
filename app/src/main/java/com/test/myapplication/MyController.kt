@@ -13,18 +13,16 @@ class MyController : AsyncEpoxyController() {
     override fun buildModels() {
         list.forEachIndexed { index, pair ->
             MyEpoxyModel_()
-                .id("my_item${pair.first}")
+                .id("my_item_$index")
                 .data(pair.first)
-                .onClick {
-                    list[index + 1] = pair.copy(first = MyData.X())
-                }
+                .addTo(this)
+            MyEpoxyModel_()
+                .id("my_item_$index")
+                .data(pair.first.copy(data = ABC.B("Sachin")))
                 .addTo(this)
             MyEpoxyModel_()
                 .id("my_item_y${pair.second}")
                 .data(pair.second)
-                .onClick {
-                    list[index + 1] = pair.copy(second = MyData.Y(index + 1))
-                }
                 .addTo(this)
         }
     }

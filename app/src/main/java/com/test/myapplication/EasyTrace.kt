@@ -1,18 +1,13 @@
 package com.test.myapplication
 
-import android.os.Build
 import android.os.Debug
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.perf.ktx.performance
 import com.google.firebase.perf.metrics.HttpMetric
 import com.google.firebase.perf.metrics.Trace
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 
 object EasyTrace {
 
@@ -42,25 +37,19 @@ object EasyTrace {
         stop()
     }
 
-    suspend fun startTraceWithAdditionalParams(traceName: String) =
-        withContext(Dispatchers.IO) {
-            startNewTrace(traceName).apply {
-                insertMemoryUsageWithTagIfRequired(INITIAL_MEMORY_USAGE)
-            }
+    fun startTraceWithAdditionalParams(traceName: String) =
+        startNewTrace(traceName).apply {
+            insertMemoryUsageWithTagIfRequired(INITIAL_MEMORY_USAGE)
         }
 
-    suspend fun Trace.stopTraceWithAdditionalParams() = withContext(Dispatchers.IO) {
-        async {
-            insertMemoryUsageWithTagIfRequired(FINAL_MEMORY_USAGE)
-            stop()
-        }
+    fun Trace.stopTraceWithAdditionalParams() {
+        insertMemoryUsageWithTagIfRequired(FINAL_MEMORY_USAGE)
+        stop()
     }
 
-    private fun getMemoryUsageOfApp() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    private fun getMemoryUsageOfApp() =
         (getMemoryInfo().values.sumOf { it.toInt() }.toFloat() / 1024).toLong()
-    } else null
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun getMemoryInfo() = Debug.MemoryInfo().run {
         Debug.getMemoryInfo(this)
         memoryStats.toMutableMap().apply {
@@ -71,7 +60,7 @@ object EasyTrace {
 
     private fun Trace.insertMemoryUsageWithTagIfRequired(tag: String, required: Boolean = true) {
         if (required) {
-            getMemoryUsageOfApp()?.let { putMetric(tag, it) }
+            putMetric(tag, getMemoryUsageOfApp())
         }
     }
 

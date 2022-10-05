@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "My Application"
+rootProject.name = "Multi Module App"
 include ':app'
 include ':mylibrary'
 include ':mylibrary2'

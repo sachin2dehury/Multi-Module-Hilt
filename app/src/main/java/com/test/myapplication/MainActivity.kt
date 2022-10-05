@@ -1,6 +1,5 @@
 package com.test.myapplication
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -11,11 +10,15 @@ import androidx.metrics.performance.JankStats
 import androidx.metrics.performance.PerformanceMetricsState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.test.myapplication.EasyTrace.stopTraceWithAdditionalParams
 import com.test.myapplication.databinding.ActivityMainBinding
-import com.test.mylibrary4.MainActivity4
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -31,14 +34,47 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        setUpTask()
-        setUpClickListener()
+//        setUpTask()
+//        setUpClickListener()
 
 //        setUpEpoxy()
+
+//        doOnSuspended()
+//        doOnSuspendedWithContext()
+        traceTime()
+    }
+
+    private fun traceTime() {
+        Log.e("Sachin Start Time", "Time - ${System.currentTimeMillis()}")
+        val trace = EasyTrace.startTraceWithAdditionalParams("New Trace")
+        Log.e("Sachin Started Time", "Time - ${System.currentTimeMillis()}")
+        trace.stopTraceWithAdditionalParams()
+        Log.e("Sachin Ended Time", "Time - ${System.currentTimeMillis()}")
+    }
+
+    private fun doOnSuspended() = lifecycleScope.launch(Dispatchers.IO) {
+        Log.e("sachin", "doOnSuspended start ${System.currentTimeMillis()}")
+        awaitAll(
+            async { delay(5000) },
+            async { delay(5000) }
+        )
+        Log.e("sachin", "doOnSuspended end ${System.currentTimeMillis()}")
+    }
+
+    private fun doOnSuspendedWithContext() = lifecycleScope.launch {
+        Log.e("sachin", "doOnSuspendedWithContext start ${System.currentTimeMillis()}")
+        withContext(Dispatchers.IO) {
+            awaitAll(
+                async { delay(5000) },
+                async { delay(5000) }
+            )
+        }
+        Log.e("sachin", "doOnSuspendedWithContext end ${System.currentTimeMillis()}")
     }
 
     private fun setUpEpoxy() = binding?.run {
         textView.isVisible = false
+        controller.setFilterDuplicates(true)
         recyclerView.setControllerAndBuildModels(controller)
         lifecycleScope.launch {
             while (true) {
