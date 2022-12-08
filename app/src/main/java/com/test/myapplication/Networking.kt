@@ -3,6 +3,7 @@ package com.test.myapplication
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.test.myapplication.EasyTrace.stopApiTrace
 import okhttp3.OkHttpClient
@@ -11,17 +12,15 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 object Networking {
 
-    private val okHttp = OkHttpClient.Builder().addInterceptor {
-        val request = it.request()
-        if (Firebase.remoteConfig.getBoolean("test_app_api_load")) {
-            val trace = EasyTrace.startApiTrace(request.url.encodedPath, request.method)
-            val result = it.proceed(request)
-            trace.stopApiTrace(result.code, result.body?.contentLength() ?: 0L)
-            result
-        } else it.proceed(request)
-    }.build()
+    private val okHttp = OkHttpClient.Builder().build()
 
-    private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    private val moshi = Moshi.Builder()
+        .add(
+            PolymorphicJsonAdapterFactory.of(Data::class.java, "id")
+                .withSubtype(DataString::class.java, "string")
+                .withSubtype(DataInt::class.java, "int")
+        )
+        .add(KotlinJsonAdapterFactory()).build()
 
     private val moshiConverterFactory = MoshiConverterFactory.create(moshi)
 

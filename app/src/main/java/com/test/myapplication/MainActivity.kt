@@ -2,6 +2,8 @@ package com.test.myapplication
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -12,13 +14,17 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.test.myapplication.EasyTrace.stopTraceWithAdditionalParams
 import com.test.myapplication.databinding.ActivityMainBinding
+import com.test.mylibrary1.MyLib1
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -29,11 +35,36 @@ class MainActivity : AppCompatActivity() {
 
     private val controller = MyController()
 
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    @Inject
+    lateinit var lib1: dagger.Lazy<MyLib1>
+
+    private val viewModel: MyViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
+        lifecycleScope.launchWhenStarted {
+            makeNetworkCalls()
+            viewModel.sharedFlow.collectLatest {
+                Log.e("Flow_test", "sharedFlow $it")
+                if (it == 9) {
+                    Toast.makeText(this@MainActivity, "Shared Flow", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.stateFlow.collectLatest {
+                Log.e("Flow_test", "stateFlow $it")
+                if (it == 9) {
+                    Toast.makeText(this@MainActivity, "State Flow", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 //        setUpTask()
 //        setUpClickListener()
 
@@ -41,7 +72,33 @@ class MainActivity : AppCompatActivity() {
 
 //        doOnSuspended()
 //        doOnSuspendedWithContext()
-        traceTime()
+//        traceTime()
+//        Log.e("Sachin","____")
+//        traceTime()
+
+//        val myFlow: Flow<Int> = flow {
+//            for (i in 0..100) {
+//                emit(i)
+//                delay(1000)
+//            }
+//        }
+//        val job = Job()
+//        myFlow.onEach {
+//            when (it) {
+//                5 -> {
+//                    Log.e("Flow Sachin", "${System.currentTimeMillis()}")
+//                    lifecycleScope.launch {
+//                        Log.e("Flow Sachin Inside Started", "${System.currentTimeMillis()}")
+//                        delay(10000)
+//                        Log.e("Flow Sachin Inside Ended", "${System.currentTimeMillis()}")
+//                    }
+//                    job.cancel()
+//                }
+//                else -> {
+//                    Log.e("Flow Sachin", "$it")
+//                }
+//            }
+//        }.launchIn(lifecycleScope + job)
     }
 
     private fun traceTime() {
@@ -97,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun makeNetworkCalls(i: Int) {
+    private suspend fun makeNetworkCalls(i: Int=0) {
 //        Networking.service.getPokemonList()
         Networking.service.getPokemon()
         Networking.service.getPokemonByIndex(i + 50)

@@ -2,6 +2,7 @@ package com.test.mylibrary3
 
 import com.test.mylibrary1.MyLib1
 import com.test.mylibrary4.MyLib4
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,9 +11,17 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
-object Lib3Module {
+interface Lib3Module {
 
-    @Provides
+    @Binds
     @ActivityRetainedScoped
-    fun getLib1(myLib1: MyLib1): MyLib4 = MyLib4Impl(myLib1)
+    fun getLib2(myLib: MyLib4Impl): MyLib4
 }
+
+//@Module
+//@InstallIn(ActivityRetainedComponent::class)
+//object A {
+//    @Provides
+//    @ActivityRetainedScoped
+//    fun getLib1(myLib1: MyLib1) = MyLib4Impl(myLib1)
+//}
