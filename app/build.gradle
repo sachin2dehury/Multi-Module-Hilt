@@ -88,6 +88,8 @@ dependencies {
     implementation "com.airbnb.android:epoxy:4.6.4"
     kapt "com.airbnb.android:epoxy-processor:4.6.4"
 
+    implementation("androidx.profileinstaller:profileinstaller:1.2.0")
+
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
     implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0'
 }
